@@ -1,0 +1,52 @@
+
+body{
+    background-color: black;
+    color: aliceblue;
+    display: flex; /* convierte el body en un contenedor flex */
+    justify-content: center; /* centra horizontalmente todo el body */
+}
+
+/*==================== CONTENEDOR DEL JUEGO ======================*/
+.game-container{
+    width: 360px;
+}
+
+/*==================== TITULO DEL JUEGO ======================*/
+h1{
+    margin: 0 0 12px 0;
+    text-align: center;
+}
+
+/*==================== CONTENADOR DE PUNTUACION ======================*/
+.score-container{
+    display: flex; /* Para poder alinear los elementos posteriormente */
+    justify-content: space-between; /* Pone espacio entre elementos */
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+/*==================== BOTON DE REINICIO ====================== */
+#restart-btn{
+    padding: 6px 10px;
+    cursor: pointer; /* cambia el cursor al pasar por encima del boton*/
+}
+
+/*==================== CONTENEDOR DE LA CUADRICULA ====================*/
+.grid-container{
+    display:grid; /* Crea un contenedor CSS Grid */
+    /*
+        - crea un contenedor CSS Grid con 4 columnas iguales.
+        - Cada columna usa la unidad 1fr (una fracción del espacio disponible), por lo que las 4 columnas se reparten el ancho disponible a partes iguales.
+        - Si el contenedor cambia de tamaño, las columnas se reajustan proporcionalmente.
+    */
+    /* al aplicar "display:grid o flex" al container, afecta a todos los
+    hijos directos (divs) los demás estilos no afectan a hijos */
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* 4 columnas iguales */
+    gap:10px; /* espacio entre las celdas */
+    height:360px;
+}
+
+/*==================== CELDAS DE LA CUADRICULA ======================*/
+.cell{
+    background-color: antiquewhite;
+}

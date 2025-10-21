@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <!-- sirve para que los acentos y caracteres especiales se vean bien -->
+        <meta charset="utf-8"/>
+
+        <!-- sirve para que se vea bien en moviles -->
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>2048 - Piscine</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="game-container">
+            <h1>2048</h1>
+            <div class="score-container">
+                <div>Puntuación: <span id="score">0</span></div>
+                <button id="restart-btn">Reiniciar</button>
+            </div>
+            <!--
+                CLASS-> estilo replicable
+                ID -> estilo único
+                CLASS -> se suele usar para definir estilos
+                ID -> se suele usar para identificar elementos en JS, anclas, etc.
+                ID-> tiene prioridad sobre class
+            -->
+            <div class="grid-container" id="grid">
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>

@@ -1,52 +1,468 @@
+/* Importar fuente San Francisco (estilo Apple) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-body{
-    background-color: black;
-    color: aliceblue;
-    display: flex; /* convierte el body en un contenedor flex */
-    justify-content: center; /* centra horizontalmente todo el body */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 20px;
 }
 
 /*==================== CONTENEDOR DEL JUEGO ======================*/
-.game-container{
-    width: 360px;
+.game-container {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    max-width: 500px;
+    width: 100%;
 }
 
 /*==================== TITULO DEL JUEGO ======================*/
-h1{
-    margin: 0 0 12px 0;
+h1 {
+    margin: 0 0 24px 0;
     text-align: center;
+    font-size: 56px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -2px;
 }
 
-/*==================== CONTENADOR DE PUNTUACION ======================*/
-.score-container{
-    display: flex; /* Para poder alinear los elementos posteriormente */
-    justify-content: space-between; /* Pone espacio entre elementos */
+/*==================== CONTENEDOR DE PUNTUACION ======================*/
+.score-container {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.scores {
+    display: flex;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #666;
+}
+
+.scores > div {
+    background: #f7f7f7;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 100px;
+}
+
+#score, #best-score {
+    color: #667eea;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: 24px;
+    font-weight: 700;
 }
 
 /*==================== BOTON DE REINICIO ====================== */
-#restart-btn{
-    padding: 6px 10px;
-    cursor: pointer; /* cambia el cursor al pasar por encima del boton*/
+#restart-btn {
+    padding: 12px 24px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    font-family: 'Inter', sans-serif;
+}
+
+#restart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+#restart-btn:active {
+    transform: translateY(0);
+}
+
+#restart-btn:focus {
+    outline: none;
+    box-shadow: 
+        0 6px 20px rgba(102, 126, 234, 0.5),
+        0 0 0 4px rgba(102, 126, 234, 0.2);
 }
 
 /*==================== CONTENEDOR DE LA CUADRICULA ====================*/
-.grid-container{
-    display:grid; /* Crea un contenedor CSS Grid */
-    /*
-        - crea un contenedor CSS Grid con 4 columnas iguales.
-        - Cada columna usa la unidad 1fr (una fracción del espacio disponible), por lo que las 4 columnas se reparten el ancho disponible a partes iguales.
-        - Si el contenedor cambia de tamaño, las columnas se reajustan proporcionalmente.
-    */
-    /* al aplicar "display:grid o flex" al container, afecta a todos los
-    hijos directos (divs) los demás estilos no afectan a hijos */
-    grid-template-columns: 1fr 1fr 1fr 1fr; /* 4 columnas iguales */
-    gap:10px; /* espacio entre las celdas */
-    height:360px;
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 12px;
+    background: #e8e8e8;
+    padding: 12px;
+    border-radius: 16px;
+    aspect-ratio: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) inset;
 }
 
 /*==================== CELDAS DE LA CUADRICULA ======================*/
-.cell{
-    background-color: antiquewhite;
+.cell {
+    background: rgba(255, 255, 255, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/*==================== FICHAS CON VALORES ======================*/
+.tile {
+    color: #776e65;
+}
+
+/* Animación para fichas nuevas */
+.new-tile {
+    animation: appear 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes appear {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Animación para fusión */
+.merge {
+    animation: merge 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes merge {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Diferentes colores para diferentes valores - Estilo Apple */
+.tile-2 {
+    background: linear-gradient(135deg, #ffe5e5 0%, #ffd6d6 100%);
+    color: #333;
+    font-size: 32px;
+    box-shadow: 0 4px 8px rgba(255, 182, 193, 0.3);
+}
+
+.tile-4 {
+    background: linear-gradient(135deg, #ffd4a3 0%, #ffb380 100%);
+    color: #333;
+    font-size: 32px;
+    box-shadow: 0 4px 8px rgba(255, 179, 128, 0.3);
+}
+
+.tile-8 {
+    background: linear-gradient(135deg, #ffb3ba 0%, #ff8fa3 100%);
+    color: #fff;
+    font-size: 32px;
+    box-shadow: 0 4px 8px rgba(255, 143, 163, 0.4);
+}
+
+.tile-16 {
+    background: linear-gradient(135deg, #ff9aa2 0%, #ff6b6b 100%);
+    color: #fff;
+    font-size: 32px;
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4);
+}
+
+.tile-32 {
+    background: linear-gradient(135deg, #ff8787 0%, #ff5252 100%);
+    color: #fff;
+    font-size: 32px;
+    box-shadow: 0 4px 8px rgba(255, 82, 82, 0.5);
+}
+
+.tile-64 {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: #fff;
+    font-size: 32px;
+    box-shadow: 0 4px 8px rgba(238, 90, 111, 0.5);
+}
+
+.tile-128 {
+    background: linear-gradient(135deg, #ffd93d 0%, #ffbc42 100%);
+    color: #fff;
+    font-size: 28px;
+    box-shadow: 0 4px 12px rgba(255, 188, 66, 0.5);
+}
+
+.tile-256 {
+    background: linear-gradient(135deg, #ffbc42 0%, #ff9f1c 100%);
+    color: #fff;
+    font-size: 28px;
+    box-shadow: 0 4px 12px rgba(255, 159, 28, 0.5);
+}
+
+.tile-512 {
+    background: linear-gradient(135deg, #ff9f1c 0%, #ff8200 100%);
+    color: #fff;
+    font-size: 28px;
+    box-shadow: 0 4px 12px rgba(255, 130, 0, 0.6);
+}
+
+.tile-1024 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    font-size: 24px;
+    box-shadow: 0 6px 16px rgba(118, 75, 162, 0.6);
+}
+
+.tile-2048 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: #fff;
+    font-size: 24px;
+    box-shadow: 0 8px 20px rgba(245, 87, 108, 0.6);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(245, 87, 108, 0.6);
+    }
+    50% {
+        box-shadow: 0 8px 30px rgba(245, 87, 108, 0.9);
+    }
+}
+
+/*==================== MODAL DE VICTORIA/DERROTA ======================*/
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 48px 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px) scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-icon {
+    font-size: 72px;
+    margin-bottom: 16px;
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.modal-content h2 {
+    margin: 0 0 12px 0;
+    font-size: 36px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modal-content p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 24px;
+}
+
+.modal-score {
+    background: #f7f7f7;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    font-size: 18px;
+    color: #666;
+}
+
+.modal-score strong {
+    color: #667eea;
+    font-size: 28px;
+    font-weight: 700;
+    display: block;
+    margin-top: 8px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Inter', sans-serif;
+}
+
+.modal-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.modal-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.modal-btn-secondary {
+    background: #f7f7f7;
+    color: #666;
+}
+
+.modal-btn-secondary:hover {
+    background: #e8e8e8;
+    transform: translateY(-2px);
+}
+
+.modal-btn:active {
+    transform: translateY(0);
+}
+
+.modal-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+}
+
+/* Estilos específicos para Game Over */
+.modal.game-over .modal-icon {
+    filter: grayscale(0.3);
+}
+
+.modal.game-over h2 {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .game-container {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 42px;
+    }
+    
+    .cell {
+        font-size: 24px;
+    }
+    
+    .tile-128, .tile-256, .tile-512 {
+        font-size: 20px;
+    }
+    
+    .tile-1024, .tile-2048 {
+        font-size: 18px;
+    }
+    
+    .modal-content {
+        padding: 32px 24px;
+    }
+    
+    .modal-icon {
+        font-size: 56px;
+    }
+    
+    .modal-content h2 {
+        font-size: 28px;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+    }
+    
+    .modal-btn {
+        width: 100%;
+    }
 }

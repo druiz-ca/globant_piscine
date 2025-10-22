@@ -14,8 +14,16 @@
         <div class="game-container">
             <h1>2048</h1>
             <div class="score-container">
-                <div>Puntuación: <span id="score">0</span></div>
-                <button id="restart-btn">Reiniciar</button>
+                <div class="scores">
+                    <div>Puntuación: <span id="score" aria-live="polite">0</span></div>
+                    <div>Mejor: <span id="best-score" aria-live="polite">0</span></div>
+                </div>
+                <button 
+                    id="restart-btn"
+                    aria-label="Reiniciar el juego"
+                    title="Reiniciar juego">
+                    🔄 Reiniciar
+                </button>
             </div>
             <!--
                 CLASS-> estilo replicable
@@ -24,9 +32,30 @@
                 ID -> se suele usar para identificar elementos en JS, anclas, etc.
                 ID-> tiene prioridad sobre class
             -->
-            <div class="grid-container" id="grid">
+            <div 
+                class="grid-container" 
+                id="grid"
+                role="grid"
+                aria-label="Tablero de juego 2048">
             </div>
         </div>
+
+        <!-- Modal de Game Over / Victoria -->
+        <div id="game-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-icon" id="modal-icon">🎉</div>
+                <h2 id="modal-title">¡Victoria!</h2>
+                <p id="modal-message">Has alcanzado 2048</p>
+                <div class="modal-score">
+                    <span>Puntuación final: <strong id="final-score">0</strong></span>
+                </div>
+                <div class="modal-buttons">
+                    <button id="modal-continue" class="modal-btn modal-btn-secondary">Continuar</button>
+                    <button id="modal-restart" class="modal-btn modal-btn-primary">Nuevo Juego</button>
+                </div>
+            </div>
+        </div>
+
         <script src="script.js"></script>
     </body>
 </html>

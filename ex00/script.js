@@ -3,8 +3,81 @@ del elemento con id "restart-btn".
 Al hacer clic en ese elemento se ejecuta la función init.*/
 document.getElementById('restart-btn').addEventListener('click', init);
 
+// Variables globales
+let score = 0;
+let bestScore = 0;
+let gameEnded = false;
+
+// Cargar mejor puntuación al inicio
+function loadBestScore() {
+    const saved = localStorage.getItem('2048-best-score');
+    bestScore = saved ? parseInt(saved) : 0;
+    updateScoreDisplay();
+}
+
+// Guardar mejor puntuación
+function saveBestScore() {
+    if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('2048-best-score', bestScore);
+    }
+}
+
+// Actualizar display de puntuaciones
+function updateScoreDisplay() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('best-score').textContent = bestScore;
+}
+
+// Añadir puntos
+function addScore(points) {
+    score += points;
+    saveBestScore();
+    updateScoreDisplay();
+}
+
+// Función para mostrar modal
+function showModal(type, message) {
+    const modal = document.getElementById('game-modal');
+    const modalIcon = document.getElementById('modal-icon');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const finalScore = document.getElementById('final-score');
+    const continueBtn = document.getElementById('modal-continue');
+    
+    // Configurar contenido según el tipo
+    if (type === 'win') {
+        modal.classList.remove('game-over');
+        modalIcon.textContent = '🎉';
+        modalTitle.textContent = '¡Victoria!';
+        modalMessage.textContent = message;
+        continueBtn.style.display = 'block';
+    } else {
+        modal.classList.add('game-over');
+        modalIcon.textContent = '😢';
+        modalTitle.textContent = 'Game Over';
+        modalMessage.textContent = message;
+        continueBtn.style.display = 'none';
+    }
+    
+    finalScore.textContent = score;
+    modal.classList.add('show');
+}
+
+// Función para cerrar modal
+function closeModal() {
+    const modal = document.getElementById('game-modal');
+    modal.classList.remove('show');
+}
+
 function init(){
     console.log('Inicializar el juego');
+    score = 0;
+    gameEnded = false;
+    closeModal();
+    updateScoreDisplay();
+    initGrid();
+    renderGrid();
 }
 
 // Array de la cuadricula
@@ -14,108 +87,126 @@ let grid_array = [];
 function initGrid(){
     grid_array = [];
     
-    // LLena la matriz con 0s
     for (let i = 0; i < 4; i++)
-        grid_array.push([0,0,0,0]);
+        grid_array.push([0, 0, 0, 0]);
 
-    // Llama 2x a addRandom... para poner 2 fichas
     addRandomTile();
     addRandomTile();
 
-    // Renderiza los números de la matriz
     renderGrid();
-
     console.log(grid_array);
 }
 
-// Función para añadir una ficha aleatoria
+// Variable global para trackear posiciones nuevas
+let newTilePosition = null;
+
 function addRandomTile(){
-    let aux_array = []; // array vacío auxiliar
+    let aux_array = [];
     
-    // Recorre todas las pos. de grid
     for (let r = 0; r < 4; r++){
         for (let c = 0; c < 4; c++)
-            // Busca todas las posiciones vacías(0) de la cuadricula
             if (grid_array[r][c] === 0) 
-                // almacena todas las pos. de la cuadrícula que estén a 0
                 aux_array.push([r, c]);
     }
     
     if (aux_array.length === 0) 
         return false;
     
-    // Elige una al azar
-        // Genera un num random entre 0 y long del array
-        // Lo convierte en un entero
-        // Mediante desestructuración almacena la fila y columna random
     let [row, col] = aux_array[Math.floor(Math.random() * aux_array.length)];
-
-    // Coloca un 2 (el 90% de las veces) o un 4
-        // genera un num random entre 0 y 1
-        // si es menor a 0,9 escoje 2 sino 4
     grid_array[row][col] = Math.random() < 0.9 ? 2 : 4;
+    
+    // Guardar posición de la nueva ficha
+    newTilePosition = { row, col };
+    
     return true;
 }
 
+// Modificar renderGrid para aplicar clase merge
 function renderGrid(){
-    // Obtiene el contenedor de la cuadricula (id='grid')
     const gridDiv = document.getElementById('grid');
-    gridDiv.innerHTML = ""; // Limpia el tablero
-
-    // Recorre cada pos del tablero
-    for (let r = 0; r < 4; r++){
-        for (let c = 0; c < 4; c++){
-            // Lée el valor de cada celda
-            const valor = grid_array[r][c];
-            // Crea un nuevo div
+    
+    // Si el grid está vacío, crear todas las celdas
+    if (gridDiv.children.length === 0) {
+        for (let i = 0; i < 16; i++) {
             const cell = document.createElement('div');
-            // Añade la clase cell al nuevo div creado
             cell.classList.add('cell');
-            // Si la celda contiene algún valor (> 0) pone estilo
-            if(valor > 0){
-                // añade clase 'tile' para el color
-                cell.classList.add('tile', `tile-${valor}`);
-                cell.textContent = valor;
-            }
             gridDiv.appendChild(cell);
         }
     }
-}
-
-// Fucnión para colapsar fila hacia la izquierda
-function collapseRowLeft(row){
-    // 1. Filtrar ceros (quitar espacios vacíos)
-        // en res queda array con todos los números menos los 0
-    let res = row.filter(v => v !== 0);
-
-    // 2. Fusionar fichas iguales y consecutivas
-    for (let i = 0; i < res.length - 1; i++){
-        // Si la celda actual es igual a la siguiente
-        if(res[i] === res[i + 1]){
-            res[i] *= 2; // duplica el valor de la celda actual
-            res.splice(i + 1, 1); // elimina la ficha fusionada
+    
+    // Actualizar contenido de cada celda
+    let index = 0;
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            const valor = grid_array[r][c];
+            const cell = gridDiv.children[index];
+            
+            // Limpiar clases anteriores excepto 'cell'
+            cell.className = 'cell';
+            
+            if (valor > 0) {
+                cell.classList.add('tile', `tile-${valor}`);
+                cell.textContent = valor;
+                
+                // Aplicar animación a ficha nueva
+                if (newTilePosition && newTilePosition.row === r && newTilePosition.col === c) {
+                    cell.classList.add('new-tile');
+                }
+            } else {
+                cell.textContent = '';
+            }
+            
+            index++;
         }
     }
+    
+    // Resetear posición de nueva ficha
+    newTilePosition = null;
+}
 
-    // 3. Rellenar con ceros a la derecha hasta la long 4
-    while (res.length < 4){
-        res.push(0);
+// Variable global para trackear fusiones
+let mergedPositions = [];
+
+function collapseRowLeft(row) {
+    let filtered = row.filter(num => num !== 0);
+    let merged = [];
+    let skip = false;
+    
+    for (let i = 0; i < filtered.length; i++) {
+        if (skip) {
+            skip = false;
+            continue;
+        }
+        
+        if (i + 1 < filtered.length && filtered[i] === filtered[i + 1]) {
+            skip = true;
+            const mergedValue = filtered[i] * 2;
+            merged.push(mergedValue);
+            mergedPositions.push(merged.length - 1);
+            
+            // Añadir puntos por fusión
+            addScore(mergedValue);
+        } else {
+            merged.push(filtered[i]);
+        }
     }
-    return res;
+    
+    while (merged.length < 4) {
+        merged.push(0);
+    }
+    return merged;
 }
 
 // Desplaza todos los números a la izquierda
+    // procesa línea x línea
 function moveLeft(){
     let changed = false;
+    mergedPositions = [];
 
     for (let r = 0; r < 4; r++){
-        // Guarda la fila original
         let original = grid_array[r].slice();
-
-        // Aplica el colapso
         grid_array[r] = collapseRowLeft(grid_array[r]);
 
-        // Comprueba si cambió
         if (JSON.stringify(original) !== JSON.stringify(grid_array[r]))
             changed = true;
     }
@@ -124,22 +215,46 @@ function moveLeft(){
 
 // Función auxiliar para colapsar una fila hacia la derecha
 function collapseRowRight(row) {
-    // Invertir, colapsar a la izquierda, y volver a invertir
-    return collapseRowLeft(row.reverse()).reverse();
+    let filtered = row.filter(num => num !== 0);
+    let merged = [];
+    let skip = false;
+    
+    // Recorrer de derecha a izquierda
+    for (let i = filtered.length - 1; i >= 0; i--) {
+        if (skip) {
+            skip = false;
+            continue;
+        }
+        
+        if (i - 1 >= 0 && filtered[i] === filtered[i - 1]) {
+            skip = true;
+            const mergedValue = filtered[i] * 2;
+            merged.unshift(mergedValue); // Añadir al inicio
+            mergedPositions.push(merged.length - 1);
+            
+            // Añadir puntos por fusión
+            addScore(mergedValue);
+        } else {
+            merged.unshift(filtered[i]); // Añadir al inicio
+        }
+    }
+    
+    // Rellenar con ceros a la izquierda
+    while (merged.length < 4) {
+        merged.unshift(0);
+    }
+    return merged;
 }
 
 // Desplaza todos los números a la derecha
 function moveRight() {
     let changed = false;
+    mergedPositions = [];
 
     for (let r = 0; r < 4; r++) {
-        // Guarda la fila original
         let original = grid_array[r].slice();
-
-        // Aplica el colapso a la derecha
         grid_array[r] = collapseRowRight(grid_array[r]);
-
-        // Comprueba si cambió
+        
         if (JSON.stringify(original) !== JSON.stringify(grid_array[r]))
             changed = true;
     }
@@ -149,27 +264,21 @@ function moveRight() {
 // Desplaza todos los números hacia arriba
 function moveUp() {
     let changed = false;
+    mergedPositions = [];
 
-    // Para cada columna (c de 0 a 3)
     for (let c = 0; c < 4; c++) {
-        // Extraer la columna como un array
+        // Extraer columna
         let col = [];
-        for (let r = 0; r < 4; r++) {
+        for (let r = 0; r < 4; r++)
             col.push(grid_array[r][c]);
-        }
-
-        // Guarda la columna original
+        
         let original = col.slice();
-
-        // Aplica el colapso (como si fuera una fila hacia la izquierda)
-        col = collapseRowLeft(col);
-
-        // Vuelve a colocar la columna en el grid
-        for (let r = 0; r < 4; r++) {
+        col = collapseRowLeft(col); // Reutilizar función de colapso izquierda
+        
+        // Escribir columna de vuelta
+        for (let r = 0; r < 4; r++)
             grid_array[r][c] = col[r];
-        }
-
-        // Comprueba si cambió
+        
         if (JSON.stringify(original) !== JSON.stringify(col))
             changed = true;
     }
@@ -179,55 +288,137 @@ function moveUp() {
 // Desplaza todos los números hacia abajo
 function moveDown() {
     let changed = false;
+    mergedPositions = [];
 
-    // Para cada columna (c de 0 a 3)
     for (let c = 0; c < 4; c++) {
-        // Extraer la columna como un array
+        // Extraer columna
         let col = [];
-        for (let r = 0; r < 4; r++) {
+        for (let r = 0; r < 4; r++)
             col.push(grid_array[r][c]);
-        }
-
-        // Guarda la columna original
+        
         let original = col.slice();
-
-        // Invertir, colapsar, y volver a invertir (como moveRight)
-        col = collapseRowLeft(col.reverse()).reverse();
-
-        // Vuelve a colocar la columna en el grid
-        for (let r = 0; r < 4; r++) {
+        col = collapseRowRight(col); // Reutilizar función de colapso derecha
+        
+        // Escribir columna de vuelta
+        for (let r = 0; r < 4; r++)
             grid_array[r][c] = col[r];
-        }
-
-        // Comprueba si cambió
+        
         if (JSON.stringify(original) !== JSON.stringify(col))
             changed = true;
     }
     return changed;
 }
 
-// Escuchar las teclas del teclado
-document.addEventListener('keydown', function(event) {
-    let moved = false;
+// Verifica si el jugador ha ganado (alcanzó 2048)
+function checkWin() {
+    if (gameEnded) return false;
     
-    // Detectar qué tecla se pulsó
-    if (event.key === 'ArrowLeft') {
-        moved = moveLeft();
-    } else if (event.key === 'ArrowRight') {
-        moved = moveRight();
-    } else if (event.key === 'ArrowUp') {
-        moved = moveUp();
-    } else if (event.key === 'ArrowDown') {
-        moved = moveDown();
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            if (grid_array[r][c] === 2048) {
+                gameEnded = true;
+                setTimeout(() => {
+                    showModal('win', '¡Has alcanzado 2048!');
+                }, 300);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Verifica si el juego ha terminado (sin movimientos posibles)
+function checkGameOver() {
+    if (gameEnded) return false;
+    
+    // 1. Si hay celdas vacías, el juego continúa
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            if (grid_array[r][c] === 0) {
+                return false;
+            }
+        }
     }
     
-    // Si el tablero cambió:
+    // 2. Comprobar fusiones horizontales
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 3; c++) {
+            if (grid_array[r][c] === grid_array[r][c + 1]) {
+                return false;
+            }
+        }
+    }
+    
+    // 3. Comprobar fusiones verticales
+    for (let c = 0; c < 4; c++) {
+        for (let r = 0; r < 3; r++) {
+            if (grid_array[r][c] === grid_array[r + 1][c]) {
+                return false;
+            }
+        }
+    }
+    
+    // Game Over
+    gameEnded = true;
+    setTimeout(() => {
+        showModal('gameover', 'No hay más movimientos posibles');
+    }, 300);
+    return true;
+}
+
+// Event listeners para botones del modal
+document.getElementById('modal-continue').addEventListener('click', function() {
+    closeModal();
+    gameEnded = false; // Permitir continuar jugando
+});
+
+document.getElementById('modal-restart').addEventListener('click', function() {
+    init();
+});
+
+// Escuchar las teclas del teclado
+document.addEventListener('keydown', function(event) {
+    if (gameEnded) return; // No permitir movimientos si el juego terminó
+    
+    let moved = false;
+    
+    switch (event.key) {
+        case 'ArrowLeft':
+            event.preventDefault();
+            moved = moveLeft();
+            break;
+        case 'ArrowRight':
+            event.preventDefault();
+            moved = moveRight();
+            break;
+        case 'ArrowUp':
+            event.preventDefault();
+            moved = moveUp();
+            break;
+        case 'ArrowDown':
+            event.preventDefault();
+            moved = moveDown();
+            break;
+        default:
+            return;
+    }
+    
     if (moved) {
-        addRandomTile();  // Añade una ficha nueva
-        renderGrid();      // Actualiza la vista
-        console.log(grid_array); // Para ver el estado en consola
+        addRandomTile();
+        renderGrid();
+        
+        if (checkWin()) {
+            return;
+        }
+        
+        if (checkGameOver()) {
+            return;
+        }
     }
 });
 
 // Llama a la ft initGrid al cargar la página
-window.addEventListener('load', initGrid);
+window.addEventListener('load', function() {
+    loadBestScore();
+    initGrid();
+});

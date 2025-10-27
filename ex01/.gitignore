@@ -1,8 +1,7 @@
-# Env files
+# Env files (solo ignorar archivos con valores reales)
 .env
 .env.local
 .env.*.local
-.env.example
 
 # Dependencies
 node_modules
@@ -22,4 +21,4 @@ dist-ssr
 
 # OS
 .DS_Store
-Thumbs.db.env
+Thumbs.db

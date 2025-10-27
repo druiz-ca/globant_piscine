@@ -1,0 +1,25 @@
+# Env files
+.env
+.env.local
+.env.*.local
+.env.example
+
+# Dependencies
+node_modules
+
+# Build
+dist
+dist-ssr
+*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db.env

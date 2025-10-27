@@ -59,16 +59,6 @@ Implementados para las 4 direcciones mediante las teclas de flecha:
 3. Combina números iguales para crear números más grandes
 4. Haz clic en "Reiniciar" para comenzar una nueva partida
 
-## Pendientes / Mejoras Futuras
-
-- [ ] Implementar sistema de puntuación funcional
-- [ ] Añadir detección de victoria (alcanzar 2048)
-- [ ] Añadir detección de derrota (sin movimientos posibles)
-- [ ] Implementar animaciones de movimiento y fusión
-- [ ] Añadir estilos CSS para diferentes valores de fichas (`tile-2`, `tile-4`, etc.)
-- [ ] Guardar mejor puntuación en localStorage
-- [ ] Añadir contador de movimientos
-
 ## Notas Técnicas
 
 - La variable global [`grid_array`](script.js) mantiene el estado del tablero

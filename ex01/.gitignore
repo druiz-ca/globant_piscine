@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Env files (solo ignorar archivos con valores reales)
+=======
+# Env files
+>>>>>>> 11458b49a0884011dad9d2d66e66e26cfbd6a9a9
 .env
 .env.local
 .env.*.local
